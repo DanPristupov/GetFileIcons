@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace GetFileIcons
 {
@@ -41,6 +45,20 @@ namespace GetFileIcons
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
             public string szTypeName;
         };
+
+        public static ImageSource GetImageSourceForExtension(string extension, ShellIconSize iconsize = ShellIconSize.SmallIcon)
+        {
+            if (GetIconForExtension(extension, iconsize) is Icon icon)
+            {
+                var result = Imaging.CreateBitmapSourceFromHIcon(
+                    icon.Handle,
+                    Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+                result.Freeze();
+                return result;
+            }
+            return null;
+        }
 
         public static Icon GetIconForExtension(string extension, ShellIconSize size)
         {
